@@ -7,7 +7,7 @@ Bonjour monde! Comment allez-vous aujourd'hui?
 Le programme va indexer tous les mots de ce fichier.
 
 Les arbres binaires de recherche sont des structures de donnees importantes.
-Un arbre permet de stocker des donnees de maniere hierarchique.
+Un arbre arbre arbre permet de stocker des donnees de maniere hierarchique.
 La recherche dans un arbre est efficace et rapide.
 
 Ce fichier contient assez de mots pour tester votre programme.
