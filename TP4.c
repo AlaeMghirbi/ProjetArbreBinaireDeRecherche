@@ -116,7 +116,7 @@ int ajouterOccurence(T_Index** index, char *mot, int ligne, int ordre, int phras
     return 0;
 }
 
-int indexerFichier(T_Index **index, char *filename){
+int indexerFichier(T_Index **index, char *filename, T_Phrase** listePhrases){
     FILE *fichier = fopen(filename, "r");
     if(fichier == NULL){
         printf("Erreur: impossible d'ouvrir le fichier %s\n", filename);
@@ -190,6 +190,7 @@ int indexerFichier(T_Index **index, char *filename){
         }
     }
 
+    *listePhrases = construireListePhrases((**index).racine, *listePhrases);
     fclose(fichier);
     return nbMotsLus;
 }
@@ -352,36 +353,24 @@ T_Phrase* trouverOuCreerPhrase(T_Phrase** listePhrases, int numeroPhrase) {
 }
 
 // Parcours récursif de l'ABR pour construire la liste de phrases
-void parcourirArbrePourPhrases(T_Noeud* noeud, T_Phrase** listePhrases) {
+T_Phrase* construireListePhrases(T_Noeud* noeud, T_Phrase* listePhrases) {
     if(noeud == NULL) {
-        return;
+        return listePhrases;
     }
 
-    parcourirArbrePourPhrases(noeud->filsGauche, listePhrases);
+    listePhrases = construireListePhrases(noeud->filsGauche, listePhrases);
 
     // Pour chaque position du mot, l'ajouter à sa phrase
     T_Position* pos = noeud->listePositions;
     while(pos != NULL) {
-        T_Phrase* phrase = trouverOuCreerPhrase(listePhrases, pos->numeroPhrase);
+        T_Phrase* phrase = trouverOuCreerPhrase(&listePhrases, pos->numeroPhrase);
         if(phrase != NULL) {
             ajouterMotDansPhrase(phrase, noeud->mot, pos->numeroLigne, pos->ordre);
         }
         pos = pos->suivant;
     }
 
-    parcourirArbrePourPhrases(noeud->filsDroit, listePhrases);
-}
-
-// Construit la liste complète de toutes les phrases du texte
-T_Phrase* construireListePhrases(T_Index index) {
-    if(index.racine == NULL) {
-        return NULL;
-    }
-
-    T_Phrase* listePhrases = NULL;
-    parcourirArbrePourPhrases(index.racine, &listePhrases);
-
-    return listePhrases;
+    return construireListePhrases(noeud->filsDroit, listePhrases);
 }
 
 void afficherPhrase(T_MotPhrase* listeMots) {
@@ -395,10 +384,9 @@ void afficherPhrase(T_MotPhrase* listeMots) {
     }
     printf(".\n");
 }
-
 // ==================== AFFICHER OCCURRENCES ====================
 
-void afficherOccurencesMot(T_Index index, char *mot) {
+void afficherOccurencesMot(T_Index index, T_Phrase* listePhrases, char *mot) {
     if(index.racine == NULL) {
         printf("L'index est vide.\n");
         return;
@@ -426,9 +414,6 @@ void afficherOccurencesMot(T_Index index, char *mot) {
     printf("Mot = \"%s\"\n", noeud->mot);
     printf("Occurences = %d\n", noeud->nbOccurrences);
 
-    // Construction de la liste de phrases (une seule fois)
-    T_Phrase* listePhrases = construireListePhrases(index);
-
     // Affichage de chaque phrase contenant le mot
     T_Position* pos = noeud->listePositions;
     while(pos != NULL) {
@@ -450,12 +435,11 @@ void afficherOccurencesMot(T_Index index, char *mot) {
         pos = pos->suivant;
     }
 
-    libererListePhrases(listePhrases);
 }
 
 // ====================  CONSTRUIRE TEXTE ====================
 
-void construireTexte(T_Index index, char *filename) {
+void construireTexte(T_Index index, char *filename, T_Phrase* listePhrases) {
     if(index.racine == NULL) {
         printf("L'index est vide. Impossible de construire le texte.\n");
         return;
@@ -467,7 +451,6 @@ void construireTexte(T_Index index, char *filename) {
         return;
     }
 
-    T_Phrase* listePhrases = construireListePhrases(index);
     if(listePhrases == NULL) {
         printf("Erreur lors de la construction de la liste de phrases.\n");
         fclose(fichier);
@@ -523,7 +506,6 @@ void construireTexte(T_Index index, char *filename) {
     }
 
     fprintf(fichier, "\n");
-    libererListePhrases(listePhrases);
     fclose(fichier);
 
     printf("Le texte a ete construit et enregistre dans le fichier '%s'.\n", filename);

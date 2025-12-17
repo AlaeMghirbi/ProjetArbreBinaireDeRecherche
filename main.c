@@ -17,6 +17,7 @@ void afficherMenu() {
 
 int main() {
     T_Index* index = NULL;
+    T_Phrase* listePhrases = NULL;
     int choix;
     int indexCharge = 0;
 
@@ -44,7 +45,7 @@ int main() {
                 }
 
                 printf("\nChargement du fichier '%s'...\n", nomFichier);
-                int nbMots = indexerFichier(&index, nomFichier);
+                int nbMots = indexerFichier(&index, nomFichier,&listePhrases);
 
                 if(nbMots > 0) {
                     printf(" %d mots ont ete lus et indexes.\n", nbMots);
@@ -78,7 +79,7 @@ int main() {
                     scanf("%s", mot);
 
                     printf("\n=== Recherche des occurrences ===\n");
-                    afficherOccurencesMot(*index, mot);
+                    afficherOccurencesMot(*index, listePhrases, mot);
                     printf("=================================\n");
                 }
                 break;
@@ -94,7 +95,7 @@ int main() {
                     scanf("%s", nomFichierSortie);
 
                     printf("\nConstruction du texte...\n");
-                    construireTexte(*index, nomFichierSortie);
+                    construireTexte(*index, nomFichierSortie, listePhrases);
                 }
                 break;
             }
@@ -104,6 +105,7 @@ int main() {
                 printf("\nLiberation de la memoire...\n");
                 if(indexCharge) {
                     libererIndex(index);
+                    libererListePhrases(listePhrases);
                 }
                 printf("Au revoir !\n\n");
                 break;

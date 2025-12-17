@@ -57,7 +57,7 @@ T_Position* ajouterPosition(T_Position *listeP, int ligne, int ordre, int phrase
 
 // Gestion de l'index (ABR)
 int ajouterOccurence(T_Index** index, char *mot, int ligne, int ordre, int phrase);
-int indexerFichier(T_Index **index, char *filename);
+int indexerFichier(T_Index **index, char *filename,T_Phrase** listePhrases);
 
 // Affichage
 void afficherPositions(T_Position* listeP);
@@ -74,16 +74,16 @@ T_Phrase* creerPhrase(int numeroPhrase);
 void ajouterMotDansPhrase(T_Phrase* phrase, char* mot, int ligne, int ordre);
 T_Phrase* ajouterPhrase(T_Phrase* listePhrases, T_Phrase* nouvellePhrase);
 T_Phrase* trouverOuCreerPhrase(T_Phrase** listePhrases, int numeroPhrase);
-void parcourirArbrePourPhrases(T_Noeud* noeud, T_Phrase** listePhrases);
-T_Phrase* construireListePhrases(T_Index index);
+T_Phrase* construireListePhrases(T_Noeud* noeud, T_Phrase* listePhrases);
+T_Phrase* construireListePhrasess(T_Index index);
 void afficherPhrase(T_MotPhrase* listeMots);
 
 
 // Afficher toutes les phrases contenant un mot
-void afficherOccurencesMot(T_Index index, char *mot);
+void afficherOccurencesMot(T_Index index, T_Phrase* listePhrases, char *mot);
 
 // Reconstruire le texte à partir de l'index
-void construireTexte(T_Index index, char *filename);
+void construireTexte(T_Index index, char *filename, T_Phrase* listePhrases);
 
 // Libération de mémoire
 void libererPositions(T_Position* position);
